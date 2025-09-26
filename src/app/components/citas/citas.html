@@ -1,0 +1,370 @@
+<navbar />
+<div class="main-content">
+    <div class="container-fluid px-4">
+        <!-- Header -->
+        <div class="d-none d-md-block mb-4 pt-4">
+            <div>
+                <h2 class="mb-1">Gestión de Citas</h2>
+                <p class="text-muted mb-0">Bienvenido al sistema de gestión en salud</p>
+            </div>
+        </div>
+        <!-- Citas Table -->
+        <div class="container-fluid">
+            <!-- Filtros -->
+            <div class="card filter-card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-funnel me-2"></i>
+                        Filtros de Búsqueda
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <label for="fechaInicio" class="form-label">
+                                <i class="bi bi-calendar-date me-1"></i>
+                                Fecha Inicio
+                            </label>
+                            <input type="date" class="form-control" id="fechaInicio">
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <label for="fechaFin" class="form-label">
+                                <i class="bi bi-calendar-date me-1"></i>
+                                Fecha Fin
+                            </label>
+                            <input type="date" class="form-control" id="fechaFin">
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <label for="profesional" class="form-label">
+                                <i class="bi bi-person-badge me-1"></i>
+                                Profesional
+                            </label>
+                            <select class="form-select" id="profesional">
+                                <option selected>Todos</option>
+                                <option value="diana">Diana Agudelo</option>
+                                <option value="maria">María González</option>
+                                <option value="carlos">Carlos Rodríguez</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <label for="estado" class="form-label">
+                                <i class="bi bi-flag me-1"></i>
+                                Estado
+                            </label>
+                            <select class="form-select" id="estado">
+                                <option selected>Todos</option>
+                                <option value="progreso">En progreso</option>
+                                <option value="completado">Completado</option>
+                                <option value="cancelado">Cancelado</option>
+                                <option value="pendiente">Pendiente</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12 col-md-auto">
+                            <button class="btn btn-primary-custom filter-btn me-2">
+                                <i class="bi bi-search me-2"></i>Filtrar
+                            </button>
+                        </div>
+                        <div class="col-12 col-md-auto">
+                            <button class="btn btn-secondary-custom filter-btn">
+                                <i class="bi bi-x-lg me-2"></i>Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de resultados -->
+            <div class="alert info-alert d-flex align-items-center" role="alert">
+                <i class="bi bi-info-circle me-3 fs-4"></i>
+                <div>
+                    <strong>Total de citas encontradas: 1</strong>
+                    <div class="mt-1 small">
+                        Mostrando resultados de la búsqueda actual
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla para pantallas grandes y medianas -->
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-header">
+                            <tr>
+                                <th scope="col">
+                                    <i class="bi bi-clock me-1"></i>Fecha y Hora
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-person me-1"></i>Paciente
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-person-badge me-1"></i>Profesional
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-heart-pulse me-1"></i>Servicio
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-flag me-1"></i>Estado
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-sticky me-1"></i>Observaciones
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-gear me-1"></i>Acciones
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="datetime-info">27/8/2025</div>
+                                    <div class="datetime-info">4:00:00 PM</div>
+                                    <div class="status-indicator">
+                                        <i class="bi bi-clock"></i> En progreso
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="patient-info">
+                                        <div class="patient-name">Felipe Acevedo Agudelo</div>
+                                        <div class="patient-detail">
+                                            <i class="bi bi-card-text me-1"></i>1214739350
+                                        </div>
+                                        <div class="patient-detail">
+                                            <i class="bi bi-telephone me-1"></i>3023201480
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">Diana Agudelo</div>
+                                    <div class="text-muted small">Psicóloga</div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-custom badge-service">
+                                        Espacios de Escucha
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-custom badge-status-progress">
+                                        En Progreso
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="text-muted small">ttghetrwtggtredxz</div>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button type="button" class="btn btn-sm btn-view text-white" title="Ver detalles" data-bs-toggle="tooltip">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-edit text-dark" title="Editar cita" data-bs-toggle="tooltip">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-complete text-white" title="Marcar como completada" data-bs-toggle="tooltip">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-download text-white" title="Descargar reporte" data-bs-toggle="tooltip">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-cancel text-white" title="Cancelar cita" data-bs-toggle="tooltip">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-delete text-white" title="Eliminar" data-bs-toggle="tooltip">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Ejemplo de más registros -->
+                            <tr>
+                                <td>
+                                    <div class="datetime-info">28/8/2025</div>
+                                    <div class="datetime-info">10:30:00 AM</div>
+                                    <div class="status-indicator">
+                                        <i class="bi bi-check-circle"></i> Completado
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="patient-info">
+                                        <div class="patient-name">María García López</div>
+                                        <div class="patient-detail">
+                                            <i class="bi bi-card-text me-1"></i>1098765432
+                                        </div>
+                                        <div class="patient-detail">
+                                            <i class="bi bi-telephone me-1"></i>3156789012
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">Carlos Rodríguez</div>
+                                    <div class="text-muted small">Psiquiatra</div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-custom badge-service">
+                                        Consulta Especializada
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-custom badge-status-completed">
+                                        Completado
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="text-muted small">Sesión exitosa</div>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button type="button" class="btn btn-sm btn-view text-white" title="Ver detalles" data-bs-toggle="tooltip">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-edit text-dark" title="Editar cita" data-bs-toggle="tooltip">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-download text-white" title="Descargar reporte" data-bs-toggle="tooltip">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-delete text-white" title="Eliminar" data-bs-toggle="tooltip">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Vista de tarjetas para móviles -->
+            <div class="mobile-card-view d-block d-sm-none">
+                <!-- Cita 1 -->
+                <div class="card appointment-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>27/8/2025 - 4:00:00 PM</strong>
+                        </div>
+                        <span class="badge badge-status-progress">En Progreso</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-field">
+                            <div class="field-label">Paciente</div>
+                            <div class="field-value">Felipe Acevedo Agudelo</div>
+                            <div class="text-muted small mt-1">
+                                <i class="bi bi-card-text me-1"></i>1214739350
+                                <br>
+                                <i class="bi bi-telephone me-1"></i>3023201480
+                            </div>
+                        </div>
+                        <div class="card-field">
+                            <div class="field-label">Profesional</div>
+                            <div class="field-value">Diana Agudelo</div>
+                        </div>
+                        <div class="card-field">
+                            <div class="field-label">Servicio</div>
+                            <span class="badge badge-service">Espacios de Escucha</span>
+                        </div>
+                        <div class="card-field">
+                            <div class="field-label">Observaciones</div>
+                            <div class="field-value text-muted">ttghetrwtggtredxz</div>
+                        </div>
+                        <div class="card-field">
+                            <div class="field-label">Acciones</div>
+                            <div class="action-buttons justify-content-start">
+                                <button type="button" class="btn btn-sm btn-view text-white" title="Ver">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-edit text-dark" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-complete text-white" title="Completar">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-download text-white" title="Descargar">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-cancel text-white" title="Cancelar">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-delete text-white" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cita 2 -->
+                <div class="card appointment-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>28/8/2025 - 10:30:00 AM</strong>
+                        </div>
+                        <span class="badge badge-status-completed">Completado</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-field">
+                            <div class="field-label">Paciente</div>
+                            <div class="field-value">María García López</div>
+                            <div class="text-muted small mt-1">
+                                <i class="bi bi-card-text me-1"></i>1098765432
+                                <br>
+                                <i class="bi bi-telephone me-1"></i>3156789012
+                            </div>
+                        </div>
+                        <div class="card-field">
+                            <div class="field-label">Profesional</div>
+                            <div class="field-value">Carlos Rodríguez</div>
+                        </div>
+                        <div class="card-field">
+                            <div class="field-label">Servicio</div>
+                            <span class="badge badge-service">Consulta Especializada</span>
+                        </div>
+                        <div class="card-field">
+                            <div class="field-label">Observaciones</div>
+                            <div class="field-value text-muted">Sesión exitosa</div>
+                        </div>
+                        <div class="card-field">
+                            <div class="field-label">Acciones</div>
+                            <div class="action-buttons justify-content-start">
+                                <button type="button" class="btn btn-sm btn-view text-white" title="Ver">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-edit text-dark" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-download text-white" title="Descargar">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-delete text-white" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paginación -->
+            <nav aria-label="Navegación de páginas" class="mt-4">
+                <ul class="pagination justify-content-center flex-wrap">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">
+                            <i class="bi bi-chevron-left me-1"></i>Anterior
+                        </a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            Siguiente<i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

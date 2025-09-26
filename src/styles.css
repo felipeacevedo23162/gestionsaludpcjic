@@ -1,1 +1,295 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* Desktop Sidebar */
+.sidebar-desktop {
+  background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+  color: #fff;
+  min-height: 100vh;
+  position: fixed;
+  width: 280px;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-desktop a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  padding: 12px 16px;
+  display: block;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  transition: all 0.3s;
+}
+
+.sidebar-desktop a:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateX(5px);
+}
+
+.sidebar-desktop a.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.brand {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Mobile Sidebar - Mucho más simple */
+.sidebar-mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 3000;
+  color: white;
+}
+
+.sidebar-mobile.active {
+  transform: translateX(0);
+}
+
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2500;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Mobile Header */
+.mobile-header {
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px 0;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #0d6efd;
+  padding: 8px;
+}
+
+.mobile-toggle:hover {
+  background: rgba(13, 110, 253, 0.1);
+  border-radius: 6px;
+}
+
+/* Cards */
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+  transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card .card-body {
+  padding: 24px;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 1.8rem;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 8px 0;
+  color: #2c3e50;
+}
+
+.stat-title {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Table */
+.appointments-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+.appointments-card .card-header {
+  background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+  border-radius: 12px 12px 0 0 !important;
+  border: none;
+  padding: 20px;
+}
+
+.table-responsive {
+  border-radius: 0 0 12px 12px;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  color: #495057;
+  background-color: #f8f9fa;
+}
+
+.badge {
+  padding: 6px 12px;
+  font-weight: 500;
+}
+
+/* Main content positioning */
+.main-content {
+  margin-left: 280px;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .mobile-header {
+    display: none !important;
+  }
+
+  .sidebar-mobile {
+    display: none !important;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 767.98px) {
+  .sidebar-desktop {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  .container-fluid {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  .stat-card .card-body {
+    padding: 20px 16px;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
+
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  .appointments-card .card-header {
+    padding: 15px;
+  }
+
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+
+  .table td,
+  .table th {
+    padding: 8px;
+    white-space: nowrap;
+  }
+
+  .mobile-header {
+    display: block !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .stat-card .card-body {
+    padding: 16px 12px;
+  }
+
+  .stat-number {
+    font-size: 1.3rem;
+  }
+
+  .table td,
+  .table th {
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+
+  .badge {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+}
+
+/* body {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar {
+  height: 100vh;
+  background: #0d6efd;
+  color: #fff;
+}
+.sidebar a {
+  color: #fff;
+  text-decoration: none;
+}
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: .375rem;
+}
+.content {
+  flex-grow: 1;
+  padding: 20px;
+} */
