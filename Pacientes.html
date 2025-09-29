@@ -1,33 +1,91 @@
-<navbar />
-<div class="main-content">
-    <div class="container-fluid px-4">
-        <!-- Header -->
-        <div class="d-none d-md-block mb-4 pt-4">
-            <div>
-                <h2 class="mb-1">Gestión de Usuarios</h2>
-                <p class="text-muted mb-0">Bienvenido al sistema de gestión en salud</p>
-            </div>
-        </div>
-        <!-- User Management Table -->
-        <div class="page-header">
-                <h1 class="display-5">Gestión de Usuarios</h1>
-                <button class="btn btn-primary btn-lg"><i class="bi bi-plus-circle me-2"></i>Nuevo Usuario</button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pacientes</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --info-color: #0dcaf0;
+            --danger-color: #dc3545;
+        }
+
+        .main-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #eef2f5 100%);
+        }
+
+        .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+
+        .filter-card {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            margin-bottom: 1.5rem;
+        }
+
+        .table-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .table-header { background: linear-gradient(135deg,#343a40,#495057); color:#fff; position:sticky; top:0; z-index:10; }
+        .table th { border:none; font-weight:600; text-transform:uppercase; font-size:0.85rem; }
+        .table td { border-color: rgba(0,0,0,0.04); vertical-align: middle; }
+
+        .doc-sub { color:#6c757d; font-size:0.9rem; margin-top:2px; }
+
+        .action-buttons .btn { margin:2px; border-radius:8px; border:none; box-shadow:0 2px 8px rgba(0,0,0,0.12); transition:all 0.2s ease; }
+        .action-buttons .btn:hover { transform: translateY(-3px); }
+
+        .btn-view { background: linear-gradient(135deg,#0dcaf0,#0aa3b2); color:#fff; }
+        .btn-edit { background: linear-gradient(135deg,#ffc107,#e0a800); color:#212529; }
+        .btn-delete { background: linear-gradient(135deg,#dc3545,#c82333); color:#fff; }
+
+        .form-control, .form-select { border-radius:12px; border:2px solid #e9ecef; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+        .form-control:focus, .form-select:focus { box-shadow: 0 0 0 0.12rem rgba(13,110,253,0.12); border-color:#0d6efd; }
+
+        .filter-actions .btn { border-radius:50px; padding:0.6rem 1.4rem; }
+
+        /* Mobile cards */
+        .mobile-card-view { display:none; }
+        @media (max-width:576px) {
+            .table-responsive { display:none; }
+            .mobile-card-view { display:block; }
+            .patient-card { margin-bottom:1rem; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container py-3 py-md-4">
+        <div class="container-fluid">
+            <div class="page-header">
+                <h1 class="display-5">Gestión de Pacientes</h1>
+                <button class="btn btn-primary btn-lg"><i class="bi bi-plus-circle me-2"></i>Nuevo Paciente</button>
             </div>
 
             <!-- Filtros -->
             <div class="card filter-card">
                 <div class="card-body">
-                    <h5 class="card-title mb-3"><i class="bi bi-funnel me-2"></i>Buscar Usuario</h5>
+                    <h5 class="card-title mb-3"><i class="bi bi-funnel me-2"></i>Buscar Paciente</h5>
                     <div class="row g-3">
                         <div class="col-12 col-md-6">
                             <input type="search" class="form-control" placeholder="Buscar por documento, nombre o apellido">
                         </div>
                         <div class="col-12 col-sm-6 col-md-2">
                             <select class="form-select">
-                                <option selected>Todos los roles</option>
-                                <option>Administrador</option>
-                                <option>Médico</option>
-                                <option>Psicóloga</option>
+                                <option selected>Todos los géneros</option>
+                                <option>Masculino</option>
+                                <option>Femenino</option>
+                                <option>Otro</option>
                             </select>
                         </div>
                         <div class="col-12 col-sm-6 col-md-2">
@@ -48,10 +106,10 @@
             </div>
 
             <!-- Información de resultados -->
-            <div class="alert d-flex align-items-center" style="background:linear-gradient(135deg,#e9f7ef,#dff3ed);border-radius:12px;">
+            <div class="alert info-alert d-flex align-items-center" style="background:linear-gradient(135deg,#e8f6ff,#eaf7f1);border-radius:12px;">
                 <i class="bi bi-info-circle me-3 fs-4 text-primary"></i>
                 <div>
-                    <strong>Total de usuarios encontrados: 3</strong>
+                    <strong>Total de pacientes encontrados: 2</strong>
                     <div class="mt-1 small text-muted">Mostrando resultados de la búsqueda actual</div>
                 </div>
             </div>
@@ -66,33 +124,11 @@
                                 <th>Nombre Completo</th>
                                 <th>Género</th>
                                 <th>Teléfono</th>
-                                <th>Fecha Nacimiento</th>
-                                <th>Rol</th>
-                                <th>Estado</th>
+                                <th>Correo</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <div>43518926</div>
-                                    <div class="doc-sub">Cédula de Ciudadanía</div>
-                                </td>
-                                <td>Diana Agudelo</td>
-                                <td>Femenino</td>
-                                <td>3003737665</td>
-                                <td>-</td>
-                                <td><span class="badge-role medico">Medicos</span></td>
-                                <td><span class="badge-state active">Activo</span></td>
-                                <td class="text-center">
-                                    <div class="action-buttons d-inline-flex" role="group">
-                                        <button class="btn btn-sm btn-view" title="Ver"><i class="bi bi-eye"></i></button>
-                                        <button class="btn btn-sm btn-edit" title="Editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-sm btn-delete" title="Eliminar"><i class="bi bi-x-lg"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-
                             <tr>
                                 <td>
                                     <div>1214739350</div>
@@ -101,34 +137,30 @@
                                 <td>Felipe Acevedo Agudelo</td>
                                 <td>Masculino</td>
                                 <td>3023201480</td>
-                                <td>1997-06-29</td>
-                                <td><span class="badge-role admin">Administrador</span></td>
-                                <td><span class="badge-state active">Activo</span></td>
+                                <td>felipe_acevedo23162@elpoli.edu.co</td>
                                 <td class="text-center">
                                     <div class="action-buttons d-inline-flex" role="group">
                                         <button class="btn btn-sm btn-view" title="Ver"><i class="bi bi-eye"></i></button>
                                         <button class="btn btn-sm btn-edit" title="Editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-sm btn-delete" title="Eliminar"><i class="bi bi-x-lg"></i></button>
+                                        <button class="btn btn-sm btn-delete" title="Eliminar"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td>
-                                    <div>235110025</div>
+                                    <div>12541122</div>
                                     <div class="doc-sub">Cédula de Ciudadanía</div>
                                 </td>
-                                <td>Mariana Isabel Arrubla</td>
-                                <td>Femenino</td>
+                                <td>Juan Carrillo Mosquera</td>
+                                <td>Masculino</td>
                                 <td>3224502140</td>
-                                <td>-</td>
-                                <td><span class="badge-role psico">Psicóloga</span></td>
-                                <td><span class="badge-state active">Activo</span></td>
+                                <td>davidcc@gmail.com</td>
                                 <td class="text-center">
                                     <div class="action-buttons d-inline-flex" role="group">
                                         <button class="btn btn-sm btn-view" title="Ver"><i class="bi bi-eye"></i></button>
                                         <button class="btn btn-sm btn-edit" title="Editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-sm btn-delete" title="Eliminar"><i class="bi bi-x-lg"></i></button>
+                                        <button class="btn btn-sm btn-delete" title="Eliminar"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -139,47 +171,34 @@
 
             <!-- Vista móvil: tarjetas -->
             <div class="mobile-card-view mt-3 d-block d-sm-none">
-                <div class="card user-card">
-                    <div class="card-body d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6 class="mb-1">Diana Agudelo</h6>
-                            <div class="small text-muted">43518926 · Cédula de Ciudadanía</div>
-                            <div class="mt-2"><span class="badge-role medico">Medicos</span> · <span class="text-success">Activo</span></div>
-                        </div>
-                        <div class="btn-group-vertical">
-                            <button class="btn btn-sm btn-view mb-1"><i class="bi bi-eye"></i></button>
-                            <button class="btn btn-sm btn-edit mb-1"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-delete"><i class="bi bi-x-lg"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card user-card">
+                <div class="card patient-card">
                     <div class="card-body d-flex justify-content-between align-items-start">
                         <div>
                             <h6 class="mb-1">Felipe Acevedo Agudelo</h6>
                             <div class="small text-muted">1214739350 · Cédula de Ciudadanía</div>
-                            <div class="mt-2"><span class="badge-role admin">Administrador</span> · <span class="text-success">Activo</span></div>
+                            <div class="mt-2">Masculino · <span class="text-muted">3023201480</span></div>
+                            <div class="small text-muted mt-1">felipe_acevedo23162@elpoli.edu.co</div>
                         </div>
                         <div class="btn-group-vertical">
                             <button class="btn btn-sm btn-view mb-1"><i class="bi bi-eye"></i></button>
                             <button class="btn btn-sm btn-edit mb-1"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-delete"><i class="bi bi-x-lg"></i></button>
+                            <button class="btn btn-sm btn-delete"><i class="bi bi-trash"></i></button>
                         </div>
                     </div>
                 </div>
 
-                <div class="card user-card">
+                <div class="card patient-card">
                     <div class="card-body d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="mb-1">Mariana Isabel Arrubla</h6>
-                            <div class="small text-muted">235110025 · Cédula de Ciudadanía</div>
-                            <div class="mt-2"><span class="badge-role psico">Psicóloga</span> · <span class="text-success">Activo</span></div>
+                            <h6 class="mb-1">Juan Carrillo Mosquera</h6>
+                            <div class="small text-muted">12541122 · Cédula de Ciudadanía</div>
+                            <div class="mt-2">Masculino · <span class="text-muted">3224502140</span></div>
+                            <div class="small text-muted mt-1">davidcc@gmail.com</div>
                         </div>
                         <div class="btn-group-vertical">
                             <button class="btn btn-sm btn-view mb-1"><i class="bi bi-eye"></i></button>
                             <button class="btn btn-sm btn-edit mb-1"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-delete"><i class="bi bi-x-lg"></i></button>
+                            <button class="btn btn-sm btn-delete"><i class="bi bi-trash"></i></button>
                         </div>
                     </div>
                 </div>
@@ -188,9 +207,7 @@
             <!-- Paginación -->
             <nav aria-label="Navegación de páginas" class="mt-4">
                 <ul class="pagination justify-content-center flex-wrap">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1"><i class="bi bi-chevron-left me-1"></i>Anterior</a>
-                    </li>
+                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1"><i class="bi bi-chevron-left me-1"></i>Anterior</a></li>
                     <li class="page-item active"><a class="page-link" href="#">1</a></li>
                     <li class="page-item"><a class="page-link" href="#">2</a></li>
                     <li class="page-item"><a class="page-link" href="#">3</a></li>
@@ -198,6 +215,9 @@
                 </ul>
             </nav>
 
-
+        </div>
     </div>
-</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
