@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
-// TODO: replace with an environment variable or proxy when moving to other environments
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 @Injectable({
   providedIn: 'root'
@@ -13,15 +12,48 @@ export class AuthService {
 
   // credentials: { documento, contrasena }
   login(credentials: { documento: string; contrasena: string }): Observable<any> {
-    return this.http.post<any>(`${API_URL}/auth/login`, credentials);
+    return this.http.post<any>(`${API_URL}/auth/login`, credentials).pipe(
+      tap(response => {
+        if (response?.success && response.data?.tokens) {
+          this.setCookie('accessToken', response.data.tokens.accessToken, 1); // 1 día
+          this.setCookie('refreshToken', response.data.tokens.refreshToken, 7); // 7 días
+        }
+      })
+    );
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
+    return this.getCookie('accessToken');
+  }
+
+  getRefreshToken(): string | null {
+    return this.getCookie('refreshToken');
   }
 
   logout() {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    this.deleteCookie('accessToken');
+    this.deleteCookie('refreshToken');
+  }
+
+  private setCookie(name: string, value: string, days: number): void {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `expires=${date.toUTCString()}`;
+    document.cookie = `${name}=${value};${expires};path=/;SameSite=Strict;Secure`;
+  }
+
+  private getCookie(name: string): string | null {
+    const nameEQ = `${name}=`;
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
+
+  private deleteCookie(name: string): void {
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
   }
 }

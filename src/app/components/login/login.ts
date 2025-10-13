@@ -49,7 +49,11 @@ export class Login {
       error: (err) => {
         this.loading = false;
         console.error('Login error', err);
-        this.errorMessage = err?.error?.message || 'Error en el login';
+        if (err?.status === 429) {
+          this.errorMessage = 'Demasiados intentos. Intenta nuevamente en un momento.';
+        } else {
+          this.errorMessage = err?.error?.message || 'Error en el login';
+        }
       }
     });
   }
