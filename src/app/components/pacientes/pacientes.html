@@ -12,7 +12,7 @@
         <!-- Appointments -->
         <div class="page-header">
             <h1 class="display-5">Gestión de Pacientes</h1>
-            <button class="btn btn-primary btn-lg"><i class="bi bi-plus-circle me-2"></i>Nuevo Paciente</button>
+            <button class="btn btn-primary btn-lg" (click)="openNewPatientModal()"><i class="bi bi-plus-circle me-2"></i>Nuevo Paciente</button>
         </div>
 
         <!-- Filtros -->
@@ -155,6 +155,89 @@
                 </li>
             </ul>
         </nav>
-        
+
     </div>
 </div>
+
+<!-- Modal Nuevo Paciente -->
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1" (click)="closeModal()">
+    <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Nuevo Paciente</h5>
+                <button type="button" class="btn-close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form #patientForm="ngForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de Documento</label>
+                            <select class="form-select" [(ngModel)]="newPatient.tipo_documento_id" name="tipo_documento_id" required>
+                                <option [ngValue]="null" selected>Seleccionar</option>
+                                <option [ngValue]="1">Cédula de Ciudadanía</option>
+                                <option [ngValue]="2">Tarjeta de Identidad</option>
+                                <option [ngValue]="3">Cédula de Extranjería</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Documento</label>
+                            <input type="text" class="form-control" [(ngModel)]="newPatient.documento" name="documento" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nombres</label>
+                            <input type="text" class="form-control" [(ngModel)]="newPatient.nombres" name="nombres" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" [(ngModel)]="newPatient.apellidos" name="apellidos" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" [(ngModel)]="newPatient.fecha_nacimiento" name="fecha_nacimiento">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Género</label>
+                            <select class="form-select" [(ngModel)]="newPatient.genero_id" name="genero_id">
+                                <option [ngValue]="null" selected>Seleccionar</option>
+                                <option [ngValue]="1">Masculino</option>
+                                <option [ngValue]="2">Femenino</option>
+                                <option [ngValue]="3">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" [(ngModel)]="newPatient.telefono" name="telefono">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Correo</label>
+                            <input type="email" class="form-control" [(ngModel)]="newPatient.correo" name="correo">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Dirección</label>
+                            <textarea class="form-control" [(ngModel)]="newPatient.direccion" name="direccion" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estado Civil</label>
+                            <select class="form-select" [(ngModel)]="newPatient.estado_civil_id" name="estado_civil_id">
+                                <option [ngValue]="null" selected>Seleccionar</option>
+                                <option [ngValue]="1">Soltero/a</option>
+                                <option [ngValue]="2">Casado/a</option>
+                                <option [ngValue]="3">Unión Libre</option>
+                                <option [ngValue]="4">Divorciado/a</option>
+                                <option [ngValue]="5">Viudo/a</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="savePatient()" [disabled]="loading || !patientForm.valid">
+                    <span *ngIf="!loading">Guardar</span>
+                    <span *ngIf="loading"><span class="spinner-border spinner-border-sm me-2"></span>Guardando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showModal" *ngIf="showModal"></div>

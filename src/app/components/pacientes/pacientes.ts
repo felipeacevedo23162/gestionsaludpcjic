@@ -22,6 +22,8 @@ export class Pacientes implements OnInit {
   total = 0;
   errorMessage = '';
   showRetry = false;
+  showModal = false;
+  newPatient: Partial<Patient> = {};
 
   constructor(
     private pacientesService: PacientesService, 
@@ -126,7 +128,7 @@ export class Pacientes implements OnInit {
 
   deletePatient(id: string) {
     if (!confirm('¿Eliminar paciente?')) return;
-    
+
     this.loading = true;
     this.pacientesService.deletePatient(id).subscribe({
       next: () => {
@@ -136,6 +138,39 @@ export class Pacientes implements OnInit {
       error: (err) => {
         this.loading = false;
         console.error('Error eliminando paciente', err);
+        this.handleError(err);
+      }
+    });
+  }
+
+  openNewPatientModal() {
+    this.newPatient = {};
+    this.showModal = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.newPatient = {};
+    document.body.style.overflow = '';
+  }
+
+  savePatient() {
+    if (!this.newPatient.documento || !this.newPatient.nombres || !this.newPatient.apellidos) {
+      this.errorMessage = 'Por favor completa los campos requeridos';
+      return;
+    }
+
+    this.loading = true;
+    this.pacientesService.createPatient(this.newPatient).subscribe({
+      next: () => {
+        this.loading = false;
+        this.closeModal();
+        this.loadPatients(1);
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error creando paciente', err);
         this.handleError(err);
       }
     });
