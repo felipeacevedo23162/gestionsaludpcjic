@@ -17,13 +17,19 @@ export class Pacientes implements OnInit {
   patients: Patient[] = [];
   loading = false;
   searchQuery = '';
+  selectedGender: number | null = null;
+  selectedCivilStatus: number | null = null;
   page = 1;
   limit = 10;
   total = 0;
   errorMessage = '';
   showRetry = false;
   showModal = false;
+  showViewModal = false;
+  showEditModal = false;
   newPatient: Partial<Patient> = {};
+  selectedPatient: Patient | null = null;
+  editingPatient: Partial<Patient> = {};
 
   constructor(
     private pacientesService: PacientesService, 
@@ -68,6 +74,14 @@ export class Pacientes implements OnInit {
   clearError() {
     this.errorMessage = '';
     this.showRetry = false;
+  }
+
+  clearFilters() {
+    this.searchQuery = '';
+    this.selectedGender = null;
+    this.selectedCivilStatus = null;
+    this.page = 1;
+    this.loadPatients(1);
   }
 
   loadPatients(page: number = this.page) {
@@ -117,13 +131,49 @@ export class Pacientes implements OnInit {
   }
 
   viewPatient(id: string) {
-    // TODO: navegar a vista detalle o mostrar modal
-    console.log('view', id);
+    console.log('👁️ Abriendo modal Ver paciente:', id);
+    this.loading = true;
+    this.cdr.detectChanges();
+    
+    this.pacientesService.getPatientById(id).subscribe({
+      next: (patient) => {
+        console.log('✅ Paciente cargado para ver:', patient);
+        this.selectedPatient = patient;
+        this.showViewModal = true;
+        this.loading = false;
+        document.body.style.overflow = 'hidden';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('❌ Error cargando paciente:', err);
+        this.loading = false;
+        this.handleError(err);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   editPatient(id: string) {
-    // TODO: abrir formulario de edición
-    console.log('edit', id);
+    console.log('✏️ Abriendo modal Editar paciente:', id);
+    this.loading = true;
+    this.cdr.detectChanges();
+    
+    this.pacientesService.getPatientById(id).subscribe({
+      next: (patient) => {
+        console.log('✅ Paciente cargado para editar:', patient);
+        this.editingPatient = { ...patient };
+        this.showEditModal = true;
+        this.loading = false;
+        document.body.style.overflow = 'hidden';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('❌ Error cargando paciente:', err);
+        this.loading = false;
+        this.handleError(err);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   deletePatient(id: string) {
@@ -155,6 +205,18 @@ export class Pacientes implements OnInit {
     document.body.style.overflow = '';
   }
 
+  closeViewModal() {
+    this.showViewModal = false;
+    this.selectedPatient = null;
+    document.body.style.overflow = '';
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.editingPatient = {};
+    document.body.style.overflow = '';
+  }
+
   savePatient() {
     if (!this.newPatient.documento || !this.newPatient.nombres || !this.newPatient.apellidos) {
       this.errorMessage = 'Por favor completa los campos requeridos';
@@ -171,6 +233,27 @@ export class Pacientes implements OnInit {
       error: (err) => {
         this.loading = false;
         console.error('Error creando paciente', err);
+        this.handleError(err);
+      }
+    });
+  }
+
+  updatePatient() {
+    if (!this.editingPatient.id || !this.editingPatient.documento || !this.editingPatient.nombres || !this.editingPatient.apellidos) {
+      this.errorMessage = 'Por favor completa los campos requeridos';
+      return;
+    }
+
+    this.loading = true;
+    this.pacientesService.updatePatient(this.editingPatient.id, this.editingPatient).subscribe({
+      next: () => {
+        this.loading = false;
+        this.closeEditModal();
+        this.loadPatients(this.page);
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error actualizando paciente', err);
         this.handleError(err);
       }
     });

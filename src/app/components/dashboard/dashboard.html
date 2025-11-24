@@ -9,56 +9,59 @@
             </div>
         </div>
 
+        <!-- Error Alert -->
+        <div class="alert alert-danger" *ngIf="errorMessage">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>{{ errorMessage }}</strong>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div *ngIf="loading" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <div class="mt-2">Cargando estadísticas...</div>
+        </div>
+
         <!-- Stats -->
-        <div class="row g-3 g-md-4 mb-4">
-            <div class="col-6 col-md-3">
+        <div class="row g-3 g-md-4 mb-4" *ngIf="!loading">
+            <div class="col-6 col-md-4">
                 <div class="card stat-card text-center">
                     <div class="card-body">
                         <div class="stat-icon bg-primary bg-opacity-10 text-primary">
                             <i class="bi bi-people"></i>
                         </div>
-                        <div class="stat-number">250</div>
+                        <div class="stat-number">{{ stats.totalPacientes }}</div>
                         <div class="stat-title">Pacientes</div>
                     </div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-4">
                 <div class="card stat-card text-center">
                     <div class="card-body">
                         <div class="stat-icon bg-success bg-opacity-10 text-success">
                             <i class="bi bi-person-badge"></i>
                         </div>
-                        <div class="stat-number">35</div>
+                        <div class="stat-number">{{ stats.totalProfesionales }}</div>
                         <div class="stat-title">Profesionales</div>
                     </div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-4">
                 <div class="card stat-card text-center">
                     <div class="card-body">
                         <div class="stat-icon bg-warning bg-opacity-10 text-warning">
                             <i class="bi bi-calendar-check"></i>
                         </div>
-                        <div class="stat-number">120</div>
+                        <div class="stat-number">{{ stats.totalCitas }}</div>
                         <div class="stat-title">Citas</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card stat-card text-center">
-                    <div class="card-body">
-                        <div class="stat-icon bg-danger bg-opacity-10 text-danger">
-                            <i class="bi bi-clipboard-heart"></i>
-                        </div>
-                        <div class="stat-number">540</div>
-                        <div class="stat-title">Historias</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Appointments -->
-        <div class="card appointments-card">
+        <div class="card appointments-card" *ngIf="!loading">
             <div class="card-header text-white">
                 <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i> Próximas Citas</h5>
             </div>
@@ -74,33 +77,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><strong>Juan Pérez</strong></td>
-                            <td class="d-none d-sm-table-cell">Dra. Gómez</td>
-                            <td>20/09/2025</td>
-                            <td class="d-none d-md-table-cell">10:00 AM</td>
-                            <td><span class="badge bg-success">Confirmada</span></td>
+                        <tr *ngIf="upcomingAppointments.length === 0">
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                <i class="bi bi-calendar-x fs-3 d-block mb-2"></i>
+                                No hay citas próximas programadas
+                            </td>
                         </tr>
-                        <tr>
-                            <td><strong>María López</strong></td>
-                            <td class="d-none d-sm-table-cell">Dr. Ramírez</td>
-                            <td>21/09/2025</td>
-                            <td class="d-none d-md-table-cell">02:00 PM</td>
-                            <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Carlos Díaz</strong></td>
-                            <td class="d-none d-sm-table-cell">Dra. Herrera</td>
-                            <td>22/09/2025</td>
-                            <td class="d-none d-md-table-cell">09:00 AM</td>
-                            <td><span class="badge bg-danger">Cancelada</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Ana Rodríguez</strong></td>
-                            <td class="d-none d-sm-table-cell">Dr. Martín</td>
-                            <td>23/09/2025</td>
-                            <td class="d-none d-md-table-cell">11:30 AM</td>
-                            <td><span class="badge bg-success">Confirmada</span></td>
+                        <tr *ngFor="let appointment of upcomingAppointments">
+                            <td><strong>{{ appointment.paciente_nombre || '-' }}</strong></td>
+                            <td class="d-none d-sm-table-cell">{{ appointment.profesional_nombre || 'Sin asignar' }}</td>
+                            <td>{{ formatDate(appointment.fecha_inicio) }}</td>
+                            <td class="d-none d-md-table-cell">{{ formatTime(appointment.fecha_inicio) }}</td>
+                            <td>
+                                <span class="badge" [ngClass]="getEstadoBadgeClass(appointment.estado_id)">
+                                    {{ appointment.estado || '-' }}
+                                </span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

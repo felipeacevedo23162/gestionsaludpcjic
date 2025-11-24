@@ -8,363 +8,362 @@
                 <p class="text-muted mb-0">Bienvenido al sistema de gestión en salud</p>
             </div>
         </div>
-        <!-- Citas Table -->
-        <div class="container-fluid">
-            <!-- Filtros -->
-            <div class="card filter-card">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">
-                        <i class="bi bi-funnel me-2"></i>
-                        Filtros de Búsqueda
-                    </h5>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="display-5">Gestión de Citas</h1>
+            <button class="btn btn-primary btn-lg" (click)="openNewAppointmentModal()">
+                <i class="bi bi-plus-circle me-2"></i>Nueva Cita
+            </button>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card filter-card">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h5>
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">Buscar Paciente</label>
+                        <input type="search" class="form-control" placeholder="Buscar por nombre o documento" 
+                               [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input type="date" class="form-control" [(ngModel)]="fechaInicio">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label">Fecha Fin</label>
+                        <input type="date" class="form-control" [(ngModel)]="fechaFin">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" [(ngModel)]="selectedEstado">
+                            <option [ngValue]="null">Todos</option>
+                            <option [ngValue]="1">Programada</option>
+                            <option [ngValue]="2">En Progreso</option>
+                            <option [ngValue]="3">Completada</option>
+                            <option [ngValue]="4">Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-2 d-flex align-items-end">
+                        <div class="w-100 d-flex gap-2">
+                            <button class="btn btn-primary w-100" (click)="onSearch()">
+                                <i class="bi bi-search me-1"></i>Buscar
+                            </button>
+                            <button class="btn btn-secondary w-100" (click)="clearFilters()">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div class="alert alert-danger d-flex justify-content-between align-items-center" *ngIf="errorMessage">
+            <div>
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>{{ errorMessage }}</strong>
+            </div>
+            <div>
+                <button class="btn btn-outline-danger btn-sm me-2" *ngIf="showRetry" (click)="retryLoad()">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+                </button>
+                <button class="btn btn-outline-danger btn-sm" (click)="clearError()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Información de resultados -->
+        <div class="alert info-alert d-flex align-items-center" style="background:linear-gradient(135deg,#e8f6ff,#eaf7f1);border-radius:12px;">
+            <i class="bi bi-info-circle me-3 fs-4 text-primary"></i>
+            <div>
+                <strong>Total de Citas encontradas: {{ total }}</strong>
+                <div class="mt-1 small text-muted">Mostrando resultados de la búsqueda actual</div>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-container mt-3">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead class="table-header">
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Paciente</th>
+                            <th>Profesional</th>
+                            <th>Servicio</th>
+                            <th>Estado</th>
+                            <th>Observaciones</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="loading">
+                            <td colspan="7" class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <div class="mt-2">Cargando citas...</div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="!loading && (!appointments || appointments.length === 0)">
+                            <td colspan="7" class="text-center py-4">
+                                <i class="bi bi-inbox fs-1 text-muted"></i>
+                                <p class="mb-0 mt-2">No se encontraron citas.</p>
+                            </td>
+                        </tr>
+                        <tr *ngFor="let appointment of appointments; trackBy: trackByAppointmentId">
+                            <td>
+                                <div class="fw-semibold">{{ formatDate(appointment.fecha_inicio) }}</div>
+                                <div class="small text-muted">{{ formatTime(appointment.fecha_inicio) }} - {{ formatTime(appointment.fecha_fin) }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ appointment.paciente_nombre || '-' }}</div>
+                                <div class="small text-muted">{{ appointment.paciente_documento || '-' }}</div>
+                            </td>
+                            <td>{{ appointment.profesional_nombre || 'Sin asignar' }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ appointment.tipo_servicio || '-' }}</span>
+                            </td>
+                            <td>
+                                <span class="badge" [ngClass]="{
+                                    'bg-primary': appointment.estado_id === 1,
+                                    'bg-warning': appointment.estado_id === 2,
+                                    'bg-success': appointment.estado_id === 3,
+                                    'bg-danger': appointment.estado_id === 4
+                                }">
+                                    {{ appointment.estado || '-' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 200px;" [title]="appointment.observaciones || '-'">
+                                    {{ appointment.observaciones || '-' }}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="action-buttons d-inline-flex" role="group">
+                                    <button class="btn btn-sm btn-view" title="Ver" (click)="viewAppointment(appointment.id)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-edit" title="Editar" (click)="editAppointment(appointment.id)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-delete" title="Cancelar" (click)="deleteAppointment(appointment.id)">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Paginación -->
+        <nav aria-label="Navegación de páginas" class="mt-4">
+            <ul class="pagination justify-content-center flex-wrap">
+                <li class="page-item" [class.disabled]="page <= 1">
+                    <button class="page-link" (click)="goToPage(page - 1)" [disabled]="page <= 1">
+                        <i class="bi bi-chevron-left me-1"></i>Anterior
+                    </button>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Página {{ page }}</span>
+                </li>
+                <li class="page-item" [class.disabled]="page * limit >= total">
+                    <button class="page-link" (click)="goToPage(page + 1)" [disabled]="page * limit >= total">
+                        Siguiente<i class="bi bi-chevron-right ms-1"></i>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+</div>
+
+<!-- Modal Nueva Cita -->
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1" (click)="closeModal()">
+    <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-calendar-plus me-2"></i>Nueva Cita</h5>
+                <button type="button" class="btn-close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form #appointmentForm="ngForm">
                     <div class="row g-3">
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <label for="fechaInicio" class="form-label">
-                                <i class="bi bi-calendar-date me-1"></i>
-                                Fecha Inicio
-                            </label>
-                            <input type="date" class="form-control" id="fechaInicio">
+                        <div class="col-md-6">
+                            <label class="form-label">Paciente ID *</label>
+                            <input type="text" class="form-control" [(ngModel)]="newAppointment.paciente_id" name="paciente_id" required>
+                            <small class="text-muted">UUID del paciente</small>
                         </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <label for="fechaFin" class="form-label">
-                                <i class="bi bi-calendar-date me-1"></i>
-                                Fecha Fin
-                            </label>
-                            <input type="date" class="form-control" id="fechaFin">
+                        <div class="col-md-6">
+                            <label class="form-label">Profesional ID</label>
+                            <input type="text" class="form-control" [(ngModel)]="newAppointment.profesional_id" name="profesional_id">
+                            <small class="text-muted">UUID del profesional (opcional)</small>
                         </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <label for="profesional" class="form-label">
-                                <i class="bi bi-person-badge me-1"></i>
-                                Profesional
-                            </label>
-                            <select class="form-select" id="profesional">
-                                <option selected>Todos</option>
-                                <option value="diana">Diana Agudelo</option>
-                                <option value="maria">María González</option>
-                                <option value="carlos">Carlos Rodríguez</option>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha y Hora Inicio *</label>
+                            <input type="datetime-local" class="form-control" [(ngModel)]="newAppointment.fecha_inicio" name="fecha_inicio" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha y Hora Fin *</label>
+                            <input type="datetime-local" class="form-control" [(ngModel)]="newAppointment.fecha_fin" name="fecha_fin" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de Servicio</label>
+                            <select class="form-select" [(ngModel)]="newAppointment.tipo_servicio_id" name="tipo_servicio_id">
+                                <option [ngValue]="null">Seleccionar</option>
+                                <option [ngValue]="1">Espacios de Escucha</option>
+                                <option [ngValue]="2">Consulta Especializada</option>
+                                <option [ngValue]="3">Orientación Psicológica</option>
                             </select>
                         </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
-                            <label for="estado" class="form-label">
-                                <i class="bi bi-flag me-1"></i>
-                                Estado
-                            </label>
-                            <select class="form-select" id="estado">
-                                <option selected>Todos</option>
-                                <option value="progreso">En progreso</option>
-                                <option value="completado">Completado</option>
-                                <option value="cancelado">Cancelado</option>
-                                <option value="pendiente">Pendiente</option>
+                        <div class="col-md-6">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select" [(ngModel)]="newAppointment.estado_id" name="estado_id">
+                                <option [ngValue]="1">Programada</option>
+                                <option [ngValue]="2">En Progreso</option>
+                                <option [ngValue]="3">Completada</option>
+                                <option [ngValue]="4">Cancelada</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row mt-4">
-                        <div class="col-12 col-md-auto">
-                            <button class="btn btn-primary-custom filter-btn me-2">
-                                <i class="bi bi-search me-2"></i>Filtrar
-                            </button>
-                        </div>
-                        <div class="col-12 col-md-auto">
-                            <button class="btn btn-secondary-custom filter-btn">
-                                <i class="bi bi-x-lg me-2"></i>Limpiar
-                            </button>
+                        <div class="col-12">
+                            <label class="form-label">Observaciones</label>
+                            <textarea class="form-control" [(ngModel)]="newAppointment.observaciones" name="observaciones" rows="3"></textarea>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
-
-            <!-- Información de resultados -->
-            <div class="alert info-alert d-flex align-items-center" role="alert">
-                <i class="bi bi-info-circle me-3 fs-4"></i>
-                <div>
-                    <strong>Total de citas encontradas: 1</strong>
-                    <div class="mt-1 small">
-                        Mostrando resultados de la búsqueda actual
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="saveAppointment()" [disabled]="loading || !appointmentForm.valid">
+                    <span *ngIf="!loading">Guardar</span>
+                    <span *ngIf="loading"><span class="spinner-border spinner-border-sm me-2"></span>Guardando...</span>
+                </button>
             </div>
-
-            <!-- Tabla para pantallas grandes y medianas -->
-            <div class="table-container">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover mb-0">
-                        <thead class="table-header">
-                            <tr>
-                                <th scope="col">
-                                    <i class="bi bi-clock me-1"></i>Fecha y Hora
-                                </th>
-                                <th scope="col">
-                                    <i class="bi bi-person me-1"></i>Paciente
-                                </th>
-                                <th scope="col">
-                                    <i class="bi bi-person-badge me-1"></i>Profesional
-                                </th>
-                                <th scope="col">
-                                    <i class="bi bi-heart-pulse me-1"></i>Servicio
-                                </th>
-                                <th scope="col">
-                                    <i class="bi bi-flag me-1"></i>Estado
-                                </th>
-                                <th scope="col">
-                                    <i class="bi bi-sticky me-1"></i>Observaciones
-                                </th>
-                                <th scope="col">
-                                    <i class="bi bi-gear me-1"></i>Acciones
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="datetime-info">27/8/2025</div>
-                                    <div class="datetime-info">4:00:00 PM</div>
-                                    <div class="status-indicator">
-                                        <i class="bi bi-clock"></i> En progreso
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="patient-info">
-                                        <div class="patient-name">Felipe Acevedo Agudelo</div>
-                                        <div class="patient-detail">
-                                            <i class="bi bi-card-text me-1"></i>1214739350
-                                        </div>
-                                        <div class="patient-detail">
-                                            <i class="bi bi-telephone me-1"></i>3023201480
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="fw-semibold">Diana Agudelo</div>
-                                    <div class="text-muted small">Psicóloga</div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-custom badge-service">
-                                        Espacios de Escucha
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-custom badge-status-progress">
-                                        En Progreso
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="text-muted small">ttghetrwtggtredxz</div>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button type="button" class="btn btn-sm btn-view text-white" title="Ver detalles" data-bs-toggle="tooltip">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-edit text-dark" title="Editar cita" data-bs-toggle="tooltip">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-complete text-white" title="Marcar como completada" data-bs-toggle="tooltip">
-                                            <i class="bi bi-check-lg"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-download text-white" title="Descargar reporte" data-bs-toggle="tooltip">
-                                            <i class="bi bi-download"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-cancel text-white" title="Cancelar cita" data-bs-toggle="tooltip">
-                                            <i class="bi bi-x-lg"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-delete text-white" title="Eliminar" data-bs-toggle="tooltip">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Ejemplo de más registros -->
-                            <tr>
-                                <td>
-                                    <div class="datetime-info">28/8/2025</div>
-                                    <div class="datetime-info">10:30:00 AM</div>
-                                    <div class="status-indicator">
-                                        <i class="bi bi-check-circle"></i> Completado
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="patient-info">
-                                        <div class="patient-name">María García López</div>
-                                        <div class="patient-detail">
-                                            <i class="bi bi-card-text me-1"></i>1098765432
-                                        </div>
-                                        <div class="patient-detail">
-                                            <i class="bi bi-telephone me-1"></i>3156789012
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="fw-semibold">Carlos Rodríguez</div>
-                                    <div class="text-muted small">Psiquiatra</div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-custom badge-service">
-                                        Consulta Especializada
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge badge-custom badge-status-completed">
-                                        Completado
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="text-muted small">Sesión exitosa</div>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button type="button" class="btn btn-sm btn-view text-white" title="Ver detalles" data-bs-toggle="tooltip">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-edit text-dark" title="Editar cita" data-bs-toggle="tooltip">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-download text-white" title="Descargar reporte" data-bs-toggle="tooltip">
-                                            <i class="bi bi-download"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-delete text-white" title="Eliminar" data-bs-toggle="tooltip">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Vista de tarjetas para móviles -->
-            <div class="mobile-card-view d-block d-sm-none">
-                <!-- Cita 1 -->
-                <div class="card appointment-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>27/8/2025 - 4:00:00 PM</strong>
-                        </div>
-                        <span class="badge badge-status-progress">En Progreso</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-field">
-                            <div class="field-label">Paciente</div>
-                            <div class="field-value">Felipe Acevedo Agudelo</div>
-                            <div class="text-muted small mt-1">
-                                <i class="bi bi-card-text me-1"></i>1214739350
-                                <br>
-                                <i class="bi bi-telephone me-1"></i>3023201480
-                            </div>
-                        </div>
-                        <div class="card-field">
-                            <div class="field-label">Profesional</div>
-                            <div class="field-value">Diana Agudelo</div>
-                        </div>
-                        <div class="card-field">
-                            <div class="field-label">Servicio</div>
-                            <span class="badge badge-service">Espacios de Escucha</span>
-                        </div>
-                        <div class="card-field">
-                            <div class="field-label">Observaciones</div>
-                            <div class="field-value text-muted">ttghetrwtggtredxz</div>
-                        </div>
-                        <div class="card-field">
-                            <div class="field-label">Acciones</div>
-                            <div class="action-buttons justify-content-start">
-                                <button type="button" class="btn btn-sm btn-view text-white" title="Ver">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-edit text-dark" title="Editar">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-complete text-white" title="Completar">
-                                    <i class="bi bi-check-lg"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-download text-white" title="Descargar">
-                                    <i class="bi bi-download"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-cancel text-white" title="Cancelar">
-                                    <i class="bi bi-x-lg"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-delete text-white" title="Eliminar">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cita 2 -->
-                <div class="card appointment-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>28/8/2025 - 10:30:00 AM</strong>
-                        </div>
-                        <span class="badge badge-status-completed">Completado</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-field">
-                            <div class="field-label">Paciente</div>
-                            <div class="field-value">María García López</div>
-                            <div class="text-muted small mt-1">
-                                <i class="bi bi-card-text me-1"></i>1098765432
-                                <br>
-                                <i class="bi bi-telephone me-1"></i>3156789012
-                            </div>
-                        </div>
-                        <div class="card-field">
-                            <div class="field-label">Profesional</div>
-                            <div class="field-value">Carlos Rodríguez</div>
-                        </div>
-                        <div class="card-field">
-                            <div class="field-label">Servicio</div>
-                            <span class="badge badge-service">Consulta Especializada</span>
-                        </div>
-                        <div class="card-field">
-                            <div class="field-label">Observaciones</div>
-                            <div class="field-value text-muted">Sesión exitosa</div>
-                        </div>
-                        <div class="card-field">
-                            <div class="field-label">Acciones</div>
-                            <div class="action-buttons justify-content-start">
-                                <button type="button" class="btn btn-sm btn-view text-white" title="Ver">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-edit text-dark" title="Editar">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-download text-white" title="Descargar">
-                                    <i class="bi bi-download"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-delete text-white" title="Eliminar">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Paginación -->
-            <nav aria-label="Navegación de páginas" class="mt-4">
-                <ul class="pagination justify-content-center flex-wrap">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">
-                            <i class="bi bi-chevron-left me-1"></i>Anterior
-                        </a>
-                    </li>
-                    <li class="page-item active">
-                        <a class="page-link" href="#">1</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">
-                            Siguiente<i class="bi bi-chevron-right ms-1"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
         </div>
     </div>
 </div>
+<div class="modal-backdrop fade" [class.show]="showModal" *ngIf="showModal"></div>
+
+<!-- Modal Ver Cita -->
+<div class="modal fade" [class.show]="showViewModal" [style.display]="showViewModal ? 'block' : 'none'" tabindex="-1" (click)="closeViewModal()">
+    <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Información de la Cita</h5>
+                <button type="button" class="btn-close" (click)="closeViewModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedAppointment">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3"><i class="bi bi-calendar-event me-2"></i>Detalles de la Cita</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Paciente</label>
+                        <p class="form-control-plaintext">{{ selectedAppointment.paciente_nombre || '-' }}</p>
+                        <small class="text-muted">{{ selectedAppointment.paciente_documento || '-' }}</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Profesional</label>
+                        <p class="form-control-plaintext">{{ selectedAppointment.profesional_nombre || 'Sin asignar' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Fecha y Hora Inicio</label>
+                        <p class="form-control-plaintext">{{ formatDateTime(selectedAppointment.fecha_inicio) }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Fecha y Hora Fin</label>
+                        <p class="form-control-plaintext">{{ formatDateTime(selectedAppointment.fecha_fin) }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Tipo de Servicio</label>
+                        <p class="form-control-plaintext">{{ selectedAppointment.tipo_servicio || '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Estado</label>
+                        <p class="form-control-plaintext">
+                            <span class="badge" [ngClass]="{
+                                'bg-primary': selectedAppointment.estado_id === 1,
+                                'bg-warning': selectedAppointment.estado_id === 2,
+                                'bg-success': selectedAppointment.estado_id === 3,
+                                'bg-danger': selectedAppointment.estado_id === 4
+                            }">{{ selectedAppointment.estado || '-' }}</span>
+                        </p>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Observaciones</label>
+                        <p class="form-control-plaintext">{{ selectedAppointment.observaciones || '-' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeViewModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showViewModal" *ngIf="showViewModal"></div>
+
+<!-- Modal Editar Cita -->
+<div class="modal fade" [class.show]="showEditModal" [style.display]="showEditModal ? 'block' : 'none'" tabindex="-1" (click)="closeEditModal()">
+    <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar Cita</h5>
+                <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form #editForm="ngForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Profesional ID</label>
+                            <input type="text" class="form-control" [(ngModel)]="editingAppointment.profesional_id" name="profesional_id">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha y Hora Inicio</label>
+                            <input type="datetime-local" class="form-control" [(ngModel)]="editingAppointment.fecha_inicio" name="fecha_inicio">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha y Hora Fin</label>
+                            <input type="datetime-local" class="form-control" [(ngModel)]="editingAppointment.fecha_fin" name="fecha_fin">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de Servicio</label>
+                            <select class="form-select" [(ngModel)]="editingAppointment.tipo_servicio_id" name="tipo_servicio_id">
+                                <option [ngValue]="null">Seleccionar</option>
+                                <option [ngValue]="1">Espacios de Escucha</option>
+                                <option [ngValue]="2">Consulta Especializada</option>
+                                <option [ngValue]="3">Orientación Psicológica</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select" [(ngModel)]="editingAppointment.estado_id" name="estado_id">
+                                <option [ngValue]="1">Programada</option>
+                                <option [ngValue]="2">En Progreso</option>
+                                <option [ngValue]="3">Completada</option>
+                                <option [ngValue]="4">Cancelada</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Observaciones</label>
+                            <textarea class="form-control" [(ngModel)]="editingAppointment.observaciones" name="observaciones" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="updateAppointment()" [disabled]="loading">
+                    <span *ngIf="!loading">Guardar Cambios</span>
+                    <span *ngIf="loading"><span class="spinner-border spinner-border-sm me-2"></span>Guardando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showEditModal" *ngIf="showEditModal"></div>

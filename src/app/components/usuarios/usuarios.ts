@@ -17,11 +17,19 @@ export class Usuarios implements OnInit {
   users: User[] = [];
   loading = false;
   searchQuery = '';
+  selectedRole: number | null = null;
+  selectedStatus: boolean | null = null;
   page = 1;
   limit = 10;
   total = 0;
   errorMessage = '';
   showRetry = false;
+  showModal = false;
+  showViewModal = false;
+  showEditModal = false;
+  newUser: Partial<User> = {};
+  selectedUser: User | null = null;
+  editingUser: Partial<User> = {};
 
   constructor(
     private usuariosService: UsuariosService,
@@ -66,6 +74,14 @@ export class Usuarios implements OnInit {
   clearError() {
     this.errorMessage = '';
     this.showRetry = false;
+  }
+
+  clearFilters() {
+    this.searchQuery = '';
+    this.selectedRole = null;
+    this.selectedStatus = null;
+    this.page = 1;
+    this.loadUsers(1);
   }
 
   loadUsers(page: number = this.page) {
@@ -115,13 +131,51 @@ export class Usuarios implements OnInit {
   }
 
   viewUser(id: string) {
-    // TODO: navegar a vista detalle o mostrar modal
-    console.log('view user', id);
+    console.log('👁️ Abriendo modal Ver usuario:', id);
+    this.loading = true;
+    this.cdr.detectChanges();
+    
+    this.usuariosService.getUserById(id).subscribe({
+      next: (response) => {
+        console.log('✅ Usuario cargado para ver:', response);
+        this.selectedUser = response.data;
+        this.showViewModal = true;
+        this.loading = false;
+        document.body.style.overflow = 'hidden';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('❌ Error cargando usuario:', err);
+        this.loading = false;
+        this.handleError(err);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   editUser(id: string) {
-    // TODO: abrir formulario de edición
-    console.log('edit user', id);
+    console.log('✏️ Abriendo modal Editar usuario:', id);
+    this.loading = true;
+    this.cdr.detectChanges();
+    
+    this.usuariosService.getUserById(id).subscribe({
+      next: (response) => {
+        console.log('✅ Usuario cargado para editar:', response);
+        this.editingUser = { ...response.data };
+        // No incluir contraseña en edición
+        delete this.editingUser.contrasena;
+        this.showEditModal = true;
+        this.loading = false;
+        document.body.style.overflow = 'hidden';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('❌ Error cargando usuario:', err);
+        this.loading = false;
+        this.handleError(err);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   deleteUser(id: string) {
@@ -142,6 +196,96 @@ export class Usuarios implements OnInit {
         } else {
           this.handleError(err);
         }
+      }
+    });
+  }
+
+  openNewUserModal() {
+    this.newUser = {};
+    this.showModal = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.newUser = {};
+    document.body.style.overflow = '';
+  }
+
+  closeViewModal() {
+    this.showViewModal = false;
+    this.selectedUser = null;
+    document.body.style.overflow = '';
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.editingUser = {};
+    document.body.style.overflow = '';
+  }
+
+  saveUser() {
+    // Validar campos requeridos
+    if (!this.newUser.documento || !this.newUser.nombres || !this.newUser.apellidos || !this.newUser.contrasena || !this.newUser.rol_id) {
+      this.errorMessage = 'Por favor completa todos los campos requeridos (documento, nombres, apellidos, contraseña y rol)';
+      return;
+    }
+
+    // Validar longitud de contraseña
+    if (this.newUser.contrasena.length < 8) {
+      this.errorMessage = 'La contraseña debe tener al menos 8 caracteres';
+      return;
+    }
+
+    // Validar complejidad de contraseña
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+    if (!passwordRegex.test(this.newUser.contrasena)) {
+      this.errorMessage = 'La contraseña debe contener mayúsculas, minúsculas, números y caracteres especiales (@$!%*?&)';
+      return;
+    }
+
+    // Asegurar valores por defecto
+    const userData = {
+      ...this.newUser,
+      tipo_documento_id: this.newUser.tipo_documento_id || 1,
+      activo: this.newUser.activo !== undefined ? this.newUser.activo : true,
+      fecha_nacimiento: this.newUser.fecha_nacimiento || null
+    };
+
+    this.loading = true;
+    this.usuariosService.createUser(userData).subscribe({
+      next: () => {
+        this.loading = false;
+        this.closeModal();
+        alert('Usuario creado exitosamente');
+        this.loadUsers(1);
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error creando usuario', err);
+        console.error('Detalles del error:', err.error);
+        this.handleError(err);
+      }
+    });
+  }
+
+  updateUser() {
+    if (!this.editingUser.id || !this.editingUser.documento || !this.editingUser.nombres || !this.editingUser.apellidos) {
+      this.errorMessage = 'Por favor completa los campos requeridos';
+      return;
+    }
+
+    this.loading = true;
+    this.usuariosService.updateUser(this.editingUser.id, this.editingUser).subscribe({
+      next: () => {
+        this.loading = false;
+        this.closeEditModal();
+        this.loadUsers(this.page);
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error actualizando usuario', err);
+        this.handleError(err);
       }
     });
   }

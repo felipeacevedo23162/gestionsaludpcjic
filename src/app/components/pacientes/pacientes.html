@@ -24,24 +24,27 @@
                         <input type="search" class="form-control" placeholder="Buscar por documento, nombre o apellido" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
                     </div>
                     <div class="col-12 col-sm-6 col-md-2">
-                        <select class="form-select">
-                            <option selected>Todos los géneros</option>
-                            <option>Masculino</option>
-                            <option>Femenino</option>
-                            <option>Otro</option>
+                        <select class="form-select" [(ngModel)]="selectedGender">
+                            <option [ngValue]="null">Todos los géneros</option>
+                            <option [ngValue]="1">Masculino</option>
+                            <option [ngValue]="2">Femenino</option>
+                            <option [ngValue]="3">Otro</option>
                         </select>
                     </div>
                     <div class="col-12 col-sm-6 col-md-2">
-                        <select class="form-select">
-                            <option selected>Todos los estados</option>
-                            <option value="active">Activo</option>
-                            <option value="inactive">Inactivo</option>
+                        <select class="form-select" [(ngModel)]="selectedCivilStatus">
+                            <option [ngValue]="null">Todos los estados</option>
+                            <option [ngValue]="1">Soltero/a</option>
+                            <option [ngValue]="2">Casado/a</option>
+                            <option [ngValue]="3">Unión Libre</option>
+                            <option [ngValue]="4">Divorciado/a</option>
+                            <option [ngValue]="5">Viudo/a</option>
                         </select>
                     </div>
                     <div class="col-12 col-sm-6 col-md-2 d-flex align-items-center">
                         <div class="w-100 d-flex gap-2 filter-actions">
-                            <button class="btn btn-primary w-100"><i class="bi bi-search me-2"></i>Buscar</button>
-                            <button class="btn btn-secondary w-100"><i class="bi bi-x-lg me-2"></i>Limpiar</button>
+                            <button class="btn btn-primary w-100" (click)="onSearch()"><i class="bi bi-search me-2"></i>Buscar</button>
+                            <button class="btn btn-secondary w-100" (click)="clearFilters()"><i class="bi bi-x-lg me-2"></i>Limpiar</button>
                         </div>
                     </div>
                 </div>
@@ -241,3 +244,156 @@
     </div>
 </div>
 <div class="modal-backdrop fade" [class.show]="showModal" *ngIf="showModal"></div>
+
+<!-- Modal Ver Paciente -->
+<div class="modal fade" [class.show]="showViewModal" [style.display]="showViewModal ? 'block' : 'none'" tabindex="-1" (click)="closeViewModal()">
+    <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Información del Paciente</h5>
+                <button type="button" class="btn-close" (click)="closeViewModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedPatient">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3"><i class="bi bi-person-badge me-2"></i>Datos Personales</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Tipo de Documento</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.tipo_documento || 'No especificado' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Documento</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.documento }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Nombres</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.nombres || '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Apellidos</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.apellidos || '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Fecha de Nacimiento</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.fecha_nacimiento ? (selectedPatient.fecha_nacimiento | date:'dd/MM/yyyy') : '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Género</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.genero_nombre || '-' }}</p>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <h6 class="text-primary mb-3"><i class="bi bi-telephone me-2"></i>Información de Contacto</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Teléfono</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.telefono || '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Correo</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.correo || '-' }}</p>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Dirección</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.direccion || '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Estado Civil</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.estado_civil || '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Fecha de Registro</label>
+                        <p class="form-control-plaintext">{{ selectedPatient.creado_en ? (selectedPatient.creado_en | date:'dd/MM/yyyy HH:mm') : '-' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeViewModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showViewModal" *ngIf="showViewModal"></div>
+
+<!-- Modal Editar Paciente -->
+<div class="modal fade" [class.show]="showEditModal" [style.display]="showEditModal ? 'block' : 'none'" tabindex="-1" (click)="closeEditModal()">
+    <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar Paciente</h5>
+                <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form #editForm="ngForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de Documento</label>
+                            <select class="form-select" [(ngModel)]="editingPatient.tipo_documento_id" name="tipo_documento_id" required>
+                                <option [ngValue]="null">Seleccionar</option>
+                                <option [ngValue]="1">Cédula de Ciudadanía</option>
+                                <option [ngValue]="2">Tarjeta de Identidad</option>
+                                <option [ngValue]="3">Cédula de Extranjería</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Documento</label>
+                            <input type="text" class="form-control" [(ngModel)]="editingPatient.documento" name="documento" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nombres</label>
+                            <input type="text" class="form-control" [(ngModel)]="editingPatient.nombres" name="nombres" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" [(ngModel)]="editingPatient.apellidos" name="apellidos" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" [(ngModel)]="editingPatient.fecha_nacimiento" name="fecha_nacimiento">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Género</label>
+                            <select class="form-select" [(ngModel)]="editingPatient.genero_id" name="genero_id">
+                                <option [ngValue]="null">Seleccionar</option>
+                                <option [ngValue]="1">Masculino</option>
+                                <option [ngValue]="2">Femenino</option>
+                                <option [ngValue]="3">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" [(ngModel)]="editingPatient.telefono" name="telefono">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Correo</label>
+                            <input type="email" class="form-control" [(ngModel)]="editingPatient.correo" name="correo">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Dirección</label>
+                            <textarea class="form-control" [(ngModel)]="editingPatient.direccion" name="direccion" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estado Civil</label>
+                            <select class="form-select" [(ngModel)]="editingPatient.estado_civil_id" name="estado_civil_id">
+                                <option [ngValue]="null">Seleccionar</option>
+                                <option [ngValue]="1">Soltero/a</option>
+                                <option [ngValue]="2">Casado/a</option>
+                                <option [ngValue]="3">Unión Libre</option>
+                                <option [ngValue]="4">Divorciado/a</option>
+                                <option [ngValue]="5">Viudo/a</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="updatePatient()" [disabled]="loading || !editForm.valid">
+                    <span *ngIf="!loading">Guardar Cambios</span>
+                    <span *ngIf="loading"><span class="spinner-border spinner-border-sm me-2"></span>Guardando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showEditModal" *ngIf="showEditModal"></div>

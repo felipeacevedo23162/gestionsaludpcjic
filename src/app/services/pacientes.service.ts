@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 // Use relative API path so the dev server proxy (proxy.conf.json) can forward requests
 const API_URL = '/api';
@@ -77,7 +78,24 @@ export class PacientesService {
    * Obtiene un paciente por su id
    */
   getPatientById(id: string): Observable<Patient> {
-    return this.http.get<Patient>(`${API_URL}/patients/${id}`);
+    console.log('🌐 Llamando API getPatientById:', {
+      url: `${API_URL}/patients/${id}`,
+      id
+    });
+
+    return this.http.get<any>(`${API_URL}/patients/${id}`).pipe(
+      map((response: any) => {
+        console.log('📥 Respuesta getPatientById:', response);
+        // Si el backend devuelve { success: true, data: { patient: {...} } }
+        if (response.data && response.data.patient) {
+          console.log('✅ Retornando patient:', response.data.patient);
+          return response.data.patient;
+        }
+        // Si devuelve directamente el paciente
+        console.log('✅ Retornando response directo:', response);
+        return response;
+      })
+    );
   }
 
   /**

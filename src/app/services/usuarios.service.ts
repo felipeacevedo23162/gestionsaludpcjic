@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 // Use relative API path so the dev server proxy (proxy.conf.json) can forward requests
 const API_URL = '/api';
@@ -79,7 +80,17 @@ export class UsuariosService {
    * Los usuarios no administradores solo pueden ver su propia información.
    */
   getUserById(id: string): Observable<{ success: boolean; data: User }> {
-    return this.http.get<{ success: boolean; data: User }>(`${API_URL}/users/${id}`);
+    console.log('🌐 Llamando API getUserById:', {
+      url: `${API_URL}/users/${id}`,
+      id
+    });
+
+    return this.http.get<any>(`${API_URL}/users/${id}`).pipe(
+      map((response: any) => {
+        console.log('📥 Respuesta getUserById:', response);
+        return response;
+      })
+    );
   }
 
   /**

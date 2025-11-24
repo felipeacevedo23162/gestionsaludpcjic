@@ -22,10 +22,10 @@
         <li class="nav-item"><a class="nav-link" routerLink="/citas" routerLinkActive="active"
             [routerLinkActiveOptions]="{exact: false}"><i class="bi bi-calendar-check me-2"></i> Citas</a>
         </li>
-        <li class="nav-item"><a class="nav-link" routerLink="/historias-clinicas" routerLinkActive="active"
+        <!--<li class="nav-item"><a class="nav-link" routerLink="/historias-clinicas" routerLinkActive="active"
             [routerLinkActiveOptions]="{exact: false}"><i class="bi bi-clipboard-heart me-2"></i> Historias
             Clínicas</a>
-        </li>
+        </li>-->
         <li class="nav-item"><a class="nav-link" routerLink="/configuracion" routerLinkActive="active"
             [routerLinkActiveOptions]="{exact: false}"><i class="bi bi-gear me-2"></i> Configuración</a>
         </li>
@@ -79,11 +79,11 @@
         (click)="closeSidebar()">
         <i class="bi bi-calendar-check me-2"></i> Citas
       </a>
-      <a  routerLink="/historias-clinicas" routerLinkActive="active"
+      <!-- <a  routerLink="/historias-clinicas" routerLinkActive="active"
             [routerLinkActiveOptions]="{exact: false}" class="d-block text-white text-decoration-none p-3 rounded mb-2 bg-opacity-25 bg-white"
         (click)="closeSidebar()">
         <i class="bi bi-clipboard-heart me-2"></i> Historias Clínicas
-      </a>
+      </a> -->
       <a  routerLink="/configuracion" routerLinkActive="active"
             [routerLinkActiveOptions]="{exact: false}" class="d-block text-white text-decoration-none p-3 rounded mb-2 bg-opacity-25 bg-white"
         (click)="closeSidebar()">
@@ -112,59 +112,3 @@
     </div>
   </div>
 </div>
-
-
-<!-- navbar.component.html -->
-<!--<nav class="navbar-container">
-  <h4 class="text-center mb-4">PCJIC Salud</h4>
-  <ul class="nav flex-column">
-    <li class="nav-item mb-2">
-      <a class="nav-link" 
-         routerLink="/dashboard" 
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{exact: false}">
-        <i class="bi bi-speedometer2"></i> Dashboard
-      </a>
-    </li>
-    <li class="nav-item mb-2">
-      <a class="nav-link" 
-         routerLink="/pacientes" 
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{exact: false}">
-        <i class="bi bi-people"></i> Pacientes
-      </a>
-    </li>
-    <li class="nav-item mb-2">
-      <a class="nav-link" 
-         routerLink="/profesionales" 
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{exact: false}">
-        <i class="bi bi-person-badge"></i> Profesionales
-      </a>
-    </li>
-    <li class="nav-item mb-2">
-      <a class="nav-link" 
-         routerLink="/citas" 
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{exact: false}">
-        <i class="bi bi-calendar-check"></i> Citas
-      </a>
-    </li>
-    <li class="nav-item mb-2">
-      <a class="nav-link" 
-         routerLink="/historias-clinicas" 
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{exact: false}">
-        <i class="bi bi-clipboard-heart"></i> Historias Clínicas
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" 
-         routerLink="/configuracion" 
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{exact: false}">
-        <i class="bi bi-gear"></i> Configuración
-      </a>
-    </li>
-  </ul>
-</nav> -->
