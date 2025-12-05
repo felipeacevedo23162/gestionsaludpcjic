@@ -3,6 +3,7 @@ import { Navbar } from '../navbar/navbar';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CitasService, Appointment } from '../../services/citas.service';
+import { PacientesService, Patient } from '../../services/pacientes.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -33,9 +34,16 @@ export class Citas implements OnInit {
   newAppointment: Partial<Appointment> = {};
   selectedAppointment: Appointment | null = null;
   editingAppointment: Partial<Appointment> = {};
+  
+  // Variables para búsqueda de pacientes
+  pacientes: Patient[] = [];
+  pacientesFiltered: Patient[] = [];
+  pacienteSearchQuery = '';
+  loadingPacientes = false;
 
   constructor(
     private citasService: CitasService,
+    private pacientesService: PacientesService,
     private router: Router,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
@@ -203,9 +211,13 @@ export class Citas implements OnInit {
   }
 
   openNewAppointmentModal() {
+    const currentUserId = this.authService.getCurrentUserId();
     this.newAppointment = {
-      estado_id: 1 // Default: Programada
+      estado_id: 1, // Default: Programada
+      profesional_id: currentUserId || undefined // ID del usuario logueado
     };
+    this.pacienteSearchQuery = '';
+    this.loadPacientes(); // Cargar pacientes al abrir modal
     this.showModal = true;
     document.body.style.overflow = 'hidden';
   }
@@ -314,5 +326,44 @@ export class Citas implements OnInit {
     if (!dateString) return '-';
     const date = new Date(dateString);
     return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // Métodos para búsqueda de pacientes
+  loadPacientes() {
+    this.loadingPacientes = true;
+    this.pacientesService.getPatients(1, 100).subscribe({
+      next: (res) => {
+        this.pacientes = res.data || [];
+        this.pacientesFiltered = this.pacientes;
+        this.loadingPacientes = false;
+        console.log('✅ Pacientes cargados:', this.pacientes.length);
+      },
+      error: (err) => {
+        console.error('❌ Error cargando pacientes:', err);
+        this.pacientes = [];
+        this.pacientesFiltered = [];
+        this.loadingPacientes = false;
+      }
+    });
+  }
+
+  onPacienteSearch() {
+    const query = this.pacienteSearchQuery.toLowerCase().trim();
+    if (!query) {
+      this.pacientesFiltered = this.pacientes;
+      return;
+    }
+
+    this.pacientesFiltered = this.pacientes.filter(p => {
+      const nombreCompleto = `${p.nombres || ''} ${p.apellidos || ''}`.toLowerCase();
+      const documento = (p.documento || '').toLowerCase();
+      return nombreCompleto.includes(query) || documento.includes(query);
+    });
+  }
+
+  getPacienteDisplayName(paciente: Patient): string {
+    if (!paciente) return '';
+    const nombre = `${paciente.nombres || ''} ${paciente.apellidos || ''}`.trim();
+    return nombre || paciente.documento || paciente.id;
   }
 }

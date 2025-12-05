@@ -35,6 +35,21 @@ export class AuthService {
     this.deleteCookie('refreshToken');
   }
 
+  getCurrentUserId(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    try {
+      // Decodificar el JWT (formato: header.payload.signature)
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+      return decoded.id || decoded.userId || decoded.sub || null;
+    } catch (error) {
+      console.error('Error decodificando token:', error);
+      return null;
+    }
+  }
+
   private setCookie(name: string, value: string, days: number): void {
     const date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));

@@ -194,15 +194,34 @@
             <div class="modal-body">
                 <form #appointmentForm="ngForm">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Paciente ID *</label>
-                            <input type="text" class="form-control" [(ngModel)]="newAppointment.paciente_id" name="paciente_id" required>
-                            <small class="text-muted">UUID del paciente</small>
+                        <div class="col-12">
+                            <label class="form-label">Buscar Paciente *</label>
+                            <input type="search" 
+                                   class="form-control mb-2" 
+                                   placeholder="Buscar por nombre o documento" 
+                                   [(ngModel)]="pacienteSearchQuery" 
+                                   (input)="onPacienteSearch()"
+                                   name="pacienteSearch">
+                            <select class="form-select" 
+                                    [(ngModel)]="newAppointment.paciente_id" 
+                                    name="paciente_id" 
+                                    required
+                                    [disabled]="loadingPacientes">
+                                <option [ngValue]="null">-- Seleccione un paciente --</option>
+                                <option *ngIf="loadingPacientes" disabled>Cargando pacientes...</option>
+                                <option *ngFor="let paciente of pacientesFiltered" [ngValue]="paciente.id">
+                                    {{ getPacienteDisplayName(paciente) }} - {{ paciente.documento }}
+                                </option>
+                            </select>
+                            <small class="text-muted" *ngIf="!loadingPacientes">{{ pacientesFiltered.length }} paciente(s) encontrado(s)</small>
+                            <small class="text-muted" *ngIf="loadingPacientes">
+                                <span class="spinner-border spinner-border-sm me-1"></span>Cargando...
+                            </small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Profesional ID</label>
-                            <input type="text" class="form-control" [(ngModel)]="newAppointment.profesional_id" name="profesional_id">
-                            <small class="text-muted">UUID del profesional (opcional)</small>
+                            <input type="text" class="form-control" [(ngModel)]="newAppointment.profesional_id" name="profesional_id" readonly>
+                            <small class="text-muted">Usuario actual (asignado automáticamente)</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Fecha y Hora Inicio *</label>
